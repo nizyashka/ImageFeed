@@ -47,7 +47,7 @@
                                                     <state key="normal" image="Active"/>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="27 февраля 2025" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5oI-LN-jDg" userLabel="Date Label">
-                                                    <rect key="frame" x="32.000000000000007" y="145" width="107.66666666666669" height="16"/>
+                                                    <rect key="frame" x="24.000000000000007" y="153" width="107.66666666666669" height="16"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
@@ -55,15 +55,15 @@
                                             </subviews>
                                             <color key="backgroundColor" red="0.1019607843" green="0.1058823529" blue="0.1333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
-                                                <constraint firstItem="9NW-wW-Ktu" firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="5oI-LN-jDg" secondAttribute="trailing" constant="8" id="10A-kM-Tc5"/>
                                                 <constraint firstItem="9NW-wW-Ktu" firstAttribute="top" secondItem="Z3R-hg-MzB" secondAttribute="top" constant="4" id="3b2-lP-jbQ"/>
-                                                <constraint firstItem="9NW-wW-Ktu" firstAttribute="bottomMargin" secondItem="5oI-LN-jDg" secondAttribute="bottom" constant="8" id="68Q-Td-b0c"/>
+                                                <constraint firstItem="9NW-wW-Ktu" firstAttribute="bottomMargin" secondItem="5oI-LN-jDg" secondAttribute="bottom" id="68Q-Td-b0c"/>
                                                 <constraint firstAttribute="bottom" secondItem="9NW-wW-Ktu" secondAttribute="bottom" constant="4" id="IFu-Qd-E2m"/>
                                                 <constraint firstItem="zOd-JA-Fp9" firstAttribute="top" secondItem="9NW-wW-Ktu" secondAttribute="top" id="Txe-7o-jzT"/>
                                                 <constraint firstItem="9NW-wW-Ktu" firstAttribute="trailing" secondItem="zOd-JA-Fp9" secondAttribute="trailing" id="UHM-xR-aXc"/>
                                                 <constraint firstItem="9NW-wW-Ktu" firstAttribute="leading" secondItem="Z3R-hg-MzB" secondAttribute="leading" constant="16" id="bMe-CX-Ico"/>
                                                 <constraint firstAttribute="trailing" secondItem="9NW-wW-Ktu" secondAttribute="trailing" constant="16" id="d1B-ei-DcM"/>
-                                                <constraint firstItem="5oI-LN-jDg" firstAttribute="leading" secondItem="9NW-wW-Ktu" secondAttribute="leadingMargin" constant="8" id="kCD-lv-rAu"/>
+                                                <constraint firstItem="5oI-LN-jDg" firstAttribute="leading" secondItem="9NW-wW-Ktu" secondAttribute="leadingMargin" id="kCD-lv-rAu"/>
+                                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="5oI-LN-jDg" secondAttribute="trailing" constant="20" symbolic="YES" id="yMS-gw-eLM"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
