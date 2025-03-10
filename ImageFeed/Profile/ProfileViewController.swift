@@ -9,11 +9,11 @@ import Foundation
 import UIKit
 
 final class ProfileViewController: UIViewController {
-    var profileImageView: UIImageView?
-    var nameLabel: UILabel?
-    var loginLabel: UILabel?
-    var descriptionLabel: UILabel?
-    var exitButton: UIButton?
+    private var profileImageView: UIImageView?
+    private var nameLabel: UILabel?
+    private var loginLabel: UILabel?
+    private var descriptionLabel: UILabel?
+    private var exitButton: UIButton?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,7 +92,7 @@ final class ProfileViewController: UIViewController {
     }
     
     func addExitButton() {
-        exitButton = UIButton.systemButton(with: UIImage(named: "exit")!, target: self, action: nil)
+        exitButton = UIButton.systemButton(with: UIImage(resource: .exit), target: self, action: nil)
         guard let exitButton = exitButton else { return }
         exitButton.tintColor = .red
         exitButton.translatesAutoresizingMaskIntoConstraints = false

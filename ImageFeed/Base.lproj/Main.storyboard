@@ -159,7 +159,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kRG-pV-S3C" userLabel="Share Button">
-                                <rect key="frame" x="171" y="751" width="51" height="51"/>
+                                <rect key="frame" x="171" y="785" width="51" height="51"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="51" id="GeD-h9-z8j"/>
                                     <constraint firstAttribute="width" constant="51" id="sSo-Kh-pgG"/>
@@ -179,7 +179,7 @@
                             <constraint firstItem="kRG-pV-S3C" firstAttribute="centerX" secondItem="95h-6T-eGy" secondAttribute="centerX" id="FAS-ph-asw"/>
                             <constraint firstItem="gBL-Ae-5sf" firstAttribute="top" secondItem="95h-6T-eGy" secondAttribute="top" id="Iiv-2G-LCs"/>
                             <constraint firstAttribute="bottom" secondItem="gBL-Ae-5sf" secondAttribute="bottom" id="aku-dp-IOk"/>
-                            <constraint firstAttribute="bottomMargin" secondItem="kRG-pV-S3C" secondAttribute="bottom" constant="50" id="hoP-ml-oAP"/>
+                            <constraint firstItem="idv-tu-HCH" firstAttribute="bottom" secondItem="kRG-pV-S3C" secondAttribute="bottom" constant="16" id="hoP-ml-oAP"/>
                             <constraint firstItem="HrB-AB-rdG" firstAttribute="leading" secondItem="idv-tu-HCH" secondAttribute="leading" constant="9" id="k3K-a9-ETw"/>
                             <constraint firstItem="gBL-Ae-5sf" firstAttribute="leading" secondItem="95h-6T-eGy" secondAttribute="leading" id="vub-FX-V8g"/>
                         </constraints>
