@@ -75,6 +75,7 @@ final class WebViewViewController: UIViewController {
         ]
         
         guard let url = urlComponents.url else { return }
+        print(url)
         
         let request = URLRequest(url: url)
         webView.load(request)
@@ -98,16 +99,37 @@ extension WebViewViewController: WKNavigationDelegate {
     }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
-        if
-            let url = navigationAction.request.url,
-            let urlComponents = URLComponents(string: url.absoluteString),
-            urlComponents.path == "/oauth/authorize/native",
-            let items = urlComponents.queryItems,
-            let codeItem = items.first(where: { $0.name == "code" })
-        {
-            return codeItem.value
-        } else {
+        guard let url = navigationAction.request.url else {
+            print("No URL found in navigationAction.")
             return nil
         }
+        
+        guard let urlComponents = URLComponents(string: url.absoluteString) else {
+            print("Failed to get URLComponents from: ", url.absoluteString)
+            return nil
+        }
+        
+        guard urlComponents.path == "/oauth/authorize/native" else {
+            print("URL's do not match.")
+            return nil
+        }
+        
+        guard let codeItem = urlComponents.queryItems?.first(where: { $0.name == "code" }) else {
+            print("No such item as code found.")
+            return nil
+        }
+        
+        return codeItem.value
+//        if
+//            let url = navigationAction.request.url,
+//            let urlComponents = URLComponents(string: url.absoluteString),
+//            urlComponents.path == "/oauth/authorize/native",
+//            let items = urlComponents.queryItems,
+//            let codeItem = items.first(where: { $0.name == "code" })
+//        {
+//            return codeItem.value
+//        } else {
+//            return nil
+//        }
     }
 }
