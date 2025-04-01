@@ -21,7 +21,7 @@ protocol WebViewViewControllerDelegate: AnyObject {
 
 final class WebViewViewController: UIViewController {
     @IBOutlet private var webView: WKWebView!
-    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet private weak var progressView: UIProgressView!
     
     weak var delegate: WebViewViewControllerDelegate?
     
@@ -65,7 +65,10 @@ final class WebViewViewController: UIViewController {
     }
     
     private func loadAuthView() {
-        guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else { return }
+        guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
+            print("Error getting urlComponents from given string.")
+            return
+        }
         
         urlComponents.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
@@ -74,8 +77,10 @@ final class WebViewViewController: UIViewController {
             URLQueryItem(name: "scope", value: Constants.accessScope)
         ]
         
-        guard let url = urlComponents.url else { return }
-        print(url)
+        guard let url = urlComponents.url else {
+            print("Error getting url from urlComponents.")
+            return
+        }
         
         let request = URLRequest(url: url)
         webView.load(request)
@@ -120,16 +125,5 @@ extension WebViewViewController: WKNavigationDelegate {
         }
         
         return codeItem.value
-//        if
-//            let url = navigationAction.request.url,
-//            let urlComponents = URLComponents(string: url.absoluteString),
-//            urlComponents.path == "/oauth/authorize/native",
-//            let items = urlComponents.queryItems,
-//            let codeItem = items.first(where: { $0.name == "code" })
-//        {
-//            return codeItem.value
-//        } else {
-//            return nil
-//        }
     }
 }

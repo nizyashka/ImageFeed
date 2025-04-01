@@ -12,7 +12,7 @@ final class OAuth2Service {
     private init() {}
     
     func makeOAuthTokenRequest(code: String) -> URLRequest {
-        let baseURL = URL(string: "https://unsplash.com")
+        let baseURL = URL(string: Constants.baseURL)
         let url = URL(
             string: "/oauth/token"
             + "?client_id=\(Constants.accessKey)"

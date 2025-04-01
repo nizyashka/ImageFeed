@@ -26,6 +26,7 @@ struct OAuthTokenResponseBody: Decodable {
             let decodedResponse = try decoder.decode(OAuthTokenResponseBody.self, from: data)
             return .success(decodedResponse)
         } catch {
+            print("Error decoding received data.")
             return .failure(error)
         }
         
