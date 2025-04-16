@@ -44,3 +44,29 @@ extension URLSession {
         return task
     }
 }
+
+extension URLSession {
+    func objectTask<T: Decodable>(
+        for request: URLRequest,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) -> URLSessionTask {
+        let decoder = JSONDecoder()
+        let task = data(for: request) { (result: Result<Data, Error>) in
+            // TODO [Sprint 11] Напишите реализацию c декодированием Data в тип T
+            switch result {
+            case .success(let data):
+                do {
+                    let decodedResponse = try decoder.decode(T.self, from: data)
+                    completion(.success(decodedResponse))
+                } catch {
+                    print("Ошибка декодирования: \(error.localizedDescription), Данные: \(String(data: data, encoding: .utf8) ?? "")")
+                    completion(.failure(error))
+                }
+            case .failure(let error):
+                print("Ошибка сетевого запроса: \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+        }
+        return task
+    }
+}

@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     private var profileImageView: UIImageView?
@@ -14,15 +15,39 @@ final class ProfileViewController: UIViewController {
     private var loginLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var exitButton: UIButton?
+    private var profileService = ProfileService.shared
+    private var profileImageService = ProfileImageService.shared
+    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = UIColor(named: "YP Black")
         addProfileImageView()
         addNameLabel()
         addLoginLabel()
         addDescriptionLabel()
         addExitButton()
+        
+        guard let authToken = oauth2TokenStorage.token else {
+            print("No authorization token found.")
+            return
+        }
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        
+        updateProfileDetails()
+        updateAvatar()
+        //profileService.fetchProfile(authToken, completion: updateProfile)
     }
     
     func addProfileImageView() {
@@ -108,5 +133,33 @@ final class ProfileViewController: UIViewController {
             exitButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             exitButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor)
         ])
+    }
+    
+    func updateProfileDetails() {
+        guard let profile = profileService.profile else { return }
+        
+        guard let nameLabel = nameLabel else { return }
+        nameLabel.text = profile.name
+        
+        guard let loginLabel = loginLabel else { return }
+        loginLabel.text = profile.loginName
+        
+        guard let descriptionLabel = descriptionLabel else { return }
+        descriptionLabel.text = profile.bio
+    }
+    
+    private func updateAvatar() {
+//        guard
+//            let profileImageURL = ProfileImageService.shared.avatarURL,
+//            let url = URL(string: profileImageURL)
+//        else { return }
+        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
+        guard let profileImage = profileImageService.avatarURL else { return }
+        
+        if let profileImageURL = URL(string: profileImage) {
+            guard let profileImageView = profileImageView else { return }
+            profileImageView.kf.setImage(with: profileImageURL,
+            placeholder: UIImage(named: "placeholder"))
+        }
     }
 }

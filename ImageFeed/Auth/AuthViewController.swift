@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import ProgressHUD
+//import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
     func didAuthenticate(_ vc: AuthViewController)
@@ -15,7 +15,7 @@ protocol AuthViewControllerDelegate: AnyObject {
 
 class AuthViewController: UIViewController {
     private let showWebViewSegueIdentifier = "ShowWebView"
-    private let oauth2Service = OAuth2Service()
+    private let oauth2Service = OAuth2Service.shared
     private let oauth2TokenStorage = OAuth2TokenStorage()
     weak var delegate: AuthViewControllerDelegate?
     
@@ -52,18 +52,20 @@ class AuthViewController: UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         vc.dismiss(animated: true)
-        ProgressHUD.animate()
+        UIBlockingProgressHUD.show()
         
         oauth2Service.fetchOAuthToken(code: code) { [weak self] token in
             guard let self = self else { return }
             
-            ProgressHUD.dismiss()
-            
+            UIBlockingProgressHUD.dismiss()
             switch token {
             case .success(let result):
                 self.oauth2TokenStorage.token = result
                 self.delegate?.didAuthenticate(self)
             case .failure(let error):
+                let alert = UIAlertController(title: "Что-то пошло не так", message: "Не удалось войти в систему", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Ок", style: .default))
+                self.present(alert, animated: true)
                 print(error)
             }
         }
