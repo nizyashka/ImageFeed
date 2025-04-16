@@ -9,8 +9,17 @@ import Foundation
 import UIKit
 
 final class SplashViewController: UIViewController {
+    private var splashScreenImageView: UIImageView?
+    
     private let profileService = ProfileService.shared
     private let storage = OAuth2TokenStorage()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        view.backgroundColor = UIColor(named: "YP Black")
+        addImage()
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -18,7 +27,10 @@ final class SplashViewController: UIViewController {
         if let token = storage.token {
             fetchProfile(token: token)
         } else {
-            performSegue(withIdentifier: "showAuthenticationScreenSegueIdentifier", sender: nil)
+            let authViewController = AuthViewController()
+            authViewController.delegate = self
+            authViewController.modalPresentationStyle = .fullScreen
+            present(authViewController, animated: true)
         }
     }
     
@@ -32,23 +44,24 @@ final class SplashViewController: UIViewController {
         // Создаём экземпляр нужного контроллера из Storyboard с помощью ранее заданного идентификатора
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController")
-           
+        
         // Установим в `rootViewController` полученный контроллер
         window.rootViewController = tabBarController
     }
-}
-
-extension SplashViewController {
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showAuthenticationScreenSegueIdentifier" {
-            guard
-                let navigationController = segue.destination as? UINavigationController,
-                let viewController = navigationController.viewControllers[0] as? AuthViewController
-            else { fatalError("Failed to prepare for showAuthenticationScreenSegueIdentifier") }
-            viewController.delegate = self
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
+    
+    private func addImage() {
+        let splashScreenImage = UIImage(named: "Vector")
+        splashScreenImageView = UIImageView(image: splashScreenImage)
+        guard let splashScreenImageView = splashScreenImageView else { return }
+        splashScreenImageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(splashScreenImageView)
+        
+        NSLayoutConstraint.activate([
+            splashScreenImageView.widthAnchor.constraint(equalToConstant: 75),
+            splashScreenImageView.heightAnchor.constraint(equalToConstant: 78),
+            splashScreenImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            splashScreenImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 }
 
