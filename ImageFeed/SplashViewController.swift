@@ -13,6 +13,7 @@ final class SplashViewController: UIViewController {
     
     private let profileService = ProfileService.shared
     private let storage = OAuth2TokenStorage()
+    private let viewController = AuthViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,10 +28,14 @@ final class SplashViewController: UIViewController {
         if let token = storage.token {
             fetchProfile(token: token)
         } else {
-            let authViewController = AuthViewController()
+            let storyboard = UIStoryboard(name: "Main", bundle: .main)
+            
+            let viewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController
+            guard let authViewController = viewController else { return }
             authViewController.delegate = self
+            
             authViewController.modalPresentationStyle = .fullScreen
-            present(authViewController, animated: true)
+            self.present(authViewController, animated: true)
         }
     }
     
