@@ -29,6 +29,5 @@ struct OAuthTokenResponseBody: Decodable {
             print("Error decoding received data.")
             return .failure(error)
         }
-        
     }
 }
