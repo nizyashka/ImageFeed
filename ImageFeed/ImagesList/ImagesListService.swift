@@ -43,9 +43,9 @@ final class ImagesListService {
             return
         }
         
-        let task = URLSession.shared.dataTask(with: urlPhotos) { [weak self] error, response, data in
+        let task = URLSession.shared.dataTask(with: urlPhotos) { [weak self] data, response, error in
             if let error = error {
-                print("[ImagesListService]: NetworkError - Response received an error")
+                print("[ImagesListService]: NetworkError - \(error)")
                 return
             }
             
@@ -59,7 +59,17 @@ final class ImagesListService {
                 return
             }
             
-            //PhotoResult.decode(data: data)
+            PhotoResult.decode(data: data) { [weak self] result in
+                guard let self = self else { return }
+                
+                switch result {
+                case .success(let photoResult):
+                    self.toPhoto(from: photoResult)
+                case.failure(let error):
+                    print("[ImagesListService]: DecodingError - \(error)")
+                    return
+                }
+            }
             
             guard let self = self else { return }
             self.task = nil
@@ -67,5 +77,46 @@ final class ImagesListService {
         
         self.task = task
         task.resume()
+    }
+    
+    func toPhoto(from photoResult: [PhotoModel]) {
+        photoResult.forEach { photo in
+            let id = photo.id
+            let size = CGSize(width: photo.width, height: photo.height)
+            
+            var createdAt: Date? = nil
+            if let date = photo.createdAt {
+                guard let formattedDate = ISO8601DateFormatter().date(from: date) else {
+                    print("[ImagesListService]: DateFormatterError - Was unable to format date")
+                    return
+                }
+                createdAt = formattedDate
+            } else {
+                print("[ImagesListService]: DateFormatterError - Was unable to find date")
+            }
+            
+            var welcomeDescription: String? = nil
+            if let description = photo.welcomeDescription {
+                welcomeDescription = description
+            } else {
+                print("[ImagesListService]: WelcomeDescriptionError - Was unable to find welcome description")
+            }
+            
+            let thumbImageURL = photo.urls.urlThumb
+            let largeImageURL = photo.urls.urlLarge
+            let isLiked = photo.isLiked
+            
+            let photo = Photo(id: id,
+                              size: size,
+                              createdAt: createdAt,
+                              welcomeDescription: welcomeDescription,
+                              thumbImageURL: thumbImageURL,
+                              largeImageURL: largeImageURL,
+                              isLiked: isLiked)
+            
+            DispatchQueue.main.async {
+                self.photos.append(photo)
+            }
+        }
     }
 }
