@@ -29,25 +29,6 @@ final class ProfileService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-//        let task = urlSession.data(for: request) { [weak self] result in
-//            switch result {
-//            case .success(let data):
-//                switch ProfileResult.decode(from: data) {
-//                case .success(let responseBody):
-//                    self?.profile = responseBody
-//                    completion(.success(responseBody))
-//                    print(responseBody)
-//                case .failure(let error):
-//                    print(error)
-//                    completion(.failure(error))
-//                }
-//            case .failure(let error):
-//                print(error)
-//                completion(.failure(error))
-//            }
-//            self?.task = nil
-//        }
-        
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             switch result {
             case .success(let decodedResponse):
@@ -84,6 +65,8 @@ final class ProfileService {
             }
             self?.task = nil
         }
+        
+        self.task = task
         task.resume()
     }
 }
