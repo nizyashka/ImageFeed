@@ -7,19 +7,19 @@
 
 import Foundation
 
-struct PhotoResult {
-    static func decode(data: Data, completion: (Result<[PhotoModel], Error>) -> Void) {
-        let decoder = JSONDecoder()
-        
-        do {
-            let decodedPhotos = try decoder.decode([PhotoModel].self, from: data)
-            completion(.success(decodedPhotos))
-        } catch {
-            print("[PhotoResult]: Decoding error")
-            completion(.failure(error))
-        }
-    }
-}
+//struct PhotoResult {
+//    static func decode(data: Data, completion: (Result<[PhotoModel], Error>) -> Void) {
+//        let decoder = JSONDecoder()
+//        
+//        do {
+//            let decodedPhotos = try decoder.decode([PhotoModel].self, from: data)
+//            completion(.success(decodedPhotos))
+//        } catch {
+//            print("[PhotoResult]: Decoding error")
+//            completion(.failure(error))
+//        }
+//    }
+//}
 
 struct PhotoModel: Codable {
     let id: String

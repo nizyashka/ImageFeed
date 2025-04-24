@@ -22,6 +22,7 @@ final class ImagesListService {
     private(set) var photos: [Photo] = []
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private var task: URLSessionTask?
+    private let storage = OAuth2TokenStorage()
     
     private init() { }
     
@@ -36,44 +37,63 @@ final class ImagesListService {
             return
         }
         
-        lastLoadedPage = photos.count
+        lastLoadedPage = photos.count / 10
         
-        guard let urlPhotos = URL(string: Constants.baseURL + "/photos?page=\(lastLoadedPage)?per_page=10") else {
+        guard let urlPhotos = URL(string: "https://api.unsplash.com/photos?page=\(lastLoadedPage)&per_page=10") else {
             print("[ImagesListService]: URLError")
             return
         }
         
-        let task = URLSession.shared.dataTask(with: urlPhotos) { [weak self] data, response, error in
-            if let error = error {
-                print("[ImagesListService]: NetworkError - \(error)")
-                return
-            }
-            
-            guard let response = response else {
-                print("[ImagesListService]: NetworkError - Was received no response code")
-                return
-            }
-            
-            guard let data = data else {
-                print("[ImagesListService]: NetworkError - Response received no data")
-                return
-            }
-            
-            PhotoResult.decode(data: data) { [weak self] result in
-                guard let self = self else { return }
-                
-                switch result {
-                case .success(let photoResult):
-                    self.toPhoto(from: photoResult)
-                case.failure(let error):
-                    print("[ImagesListService]: DecodingError - \(error)")
-                    return
-                }
-            }
-            
+        var request = URLRequest(url: urlPhotos)
+        request.httpMethod = "GET"
+        guard let token = storage.token else { return }
+        request.setValue("Client-ID \(Constants.accessKey)", forHTTPHeaderField: "Authorization")
+        
+        let task = URLSession.shared.objectTask(for: request) { [weak self] (result: Result<[PhotoModel], Error>) in
             guard let self = self else { return }
-            self.task = nil
+            
+            switch result {
+            case .success(let photoResult):
+                self.toPhoto(from: photoResult)
+                self.task = nil
+            case .failure(let error):
+                print("[ImagesListService]: NetworkOrDecodingError - \(error)")
+                self.task = nil
+                return
+            }
         }
+        
+//        let task = URLSession.shared.dataTask(with: urlPhotos) { [weak self] data, response, error in
+//            if let error = error {
+//                print("[ImagesListService]: NetworkError - \(error)")
+//                return
+//            }
+//            
+//            guard let response = response else {
+//                print("[ImagesListService]: NetworkError - Was received no response code")
+//                return
+//            }
+//            
+//            guard let data = data else {
+//                print("[ImagesListService]: NetworkError - Response received no data")
+//                return
+//            }
+//            
+//            PhotoResult.decode(data: data) { [weak self] result in
+//                guard let self = self else { return }
+//                
+//                switch result {
+//                case .success(let photoResult):
+//                    self.toPhoto(from: photoResult)
+//                case.failure(let error):
+//                    print("[ImagesListService]: DecodingError - \(error)")
+//                    return
+//                }
+//            }
+//
+//            guard let self = self else { return }
+//            self.task = nil
+//        }
         
         self.task = task
         task.resume()
