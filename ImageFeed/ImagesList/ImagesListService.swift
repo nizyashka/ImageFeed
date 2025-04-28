@@ -22,30 +22,40 @@ final class ImagesListService {
     private(set) var photos: [Photo] = []
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private var task: URLSessionTask?
+    private let storage = OAuth2TokenStorage()
+    private var lastLoadedPage: Int = 1
     
     private init() { }
     
-    private var lastLoadedPage: Int?
-    
-    // ...
+    private func makeRequest() -> URLRequest? {
+        var components = URLComponents(string: "https://api.unsplash.com/photos")
+        components?.queryItems = [URLQueryItem(name: "page", value: String(lastLoadedPage))]
+        
+        guard let url = components?.url, let token = storage.token else {
+            print("[ImagesListService]: URLError Or Missing Token")
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        return request
+    }
     
     func fetchPhotosNextPage() {
-        assert(Thread.isMainThread)
         if task != nil {
-            print("Extra task")
+            print("[ImagesListService]: Extra task")
             return
         }
         
-        lastLoadedPage = photos.count
-        
-        guard let urlPhotos = URL(string: Constants.baseURL + "/photos?page=\(lastLoadedPage)?per_page=10") else {
-            print("[ImagesListService]: URLError")
+        guard let request = makeRequest() else {
+            print("[ImagesListService]: RequestError")
             return
         }
         
-        let task = URLSession.shared.dataTask(with: urlPhotos) { [weak self] error, response, data in
+        task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             if let error = error {
-                print("[ImagesListService]: NetworkError - Response received an error")
+                print("[ImagesListService]: NetworkError - \(error)")
                 return
             }
             
@@ -59,13 +69,70 @@ final class ImagesListService {
                 return
             }
             
-            //PhotoResult.decode(data: data)
+            PhotoResult.decode(data: data) { [weak self] result in
+                guard let self = self else { return }
+                
+                switch result {
+                case .success(let photoResult):
+                    self.toPhoto(from: photoResult)
+                case.failure(let error):
+                    print("[ImagesListService]: DecodingError - \(error)")
+                    return
+                }
+            }
             
             guard let self = self else { return }
             self.task = nil
         }
         
-        self.task = task
-        task.resume()
+        task?.resume()
+    }
+    
+    private func toPhoto(from photoResult: [PhotoModel]) {
+        photoResult.forEach { photo in
+            let id = photo.id
+            let size = CGSize(width: photo.width, height: photo.height)
+            
+            var createdAt: Date? = nil
+            if let date = photo.createdAt {
+                guard let formattedDate = ISO8601DateFormatter().date(from: date) else {
+                    print("[ImagesListService]: DateFormatterError - Was unable to format date")
+                    return
+                }
+                createdAt = formattedDate
+            } else {
+                print("[ImagesListService]: DateFormatterError - Was unable to find date")
+            }
+            
+            var welcomeDescription: String? = nil
+            if let description = photo.welcomeDescription {
+                welcomeDescription = description
+            } else {
+                print("[ImagesListService]: WelcomeDescriptionError - Was unable to find welcome description")
+            }
+            
+            let thumbImageURL = photo.urls.urlThumb
+            let largeImageURL = photo.urls.urlLarge
+            let isLiked = photo.isLiked
+            
+            let photo = Photo(id: id,
+                              size: size,
+                              createdAt: createdAt,
+                              welcomeDescription: welcomeDescription,
+                              thumbImageURL: thumbImageURL,
+                              largeImageURL: largeImageURL,
+                              isLiked: isLiked)
+            
+            DispatchQueue.main.async {
+                self.photos.append(photo)
+            }
+        }
+        
+        NotificationCenter.default
+            .post(
+                name: ImagesListService.didChangeNotification,
+                object: self,
+                userInfo: nil)
+        lastLoadedPage += 1
     }
 }

@@ -9,7 +9,7 @@ import UIKit
 
 final class ImagesListViewController: UIViewController {
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    let imagesListService = ImagesListService.shared
+    private let imagesListService = ImagesListService.shared
     
     @IBOutlet private var tableView: UITableView!
     
@@ -25,6 +25,8 @@ final class ImagesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        //imagesListService.fetchPhotosNextPage()
         
         tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
@@ -62,7 +64,7 @@ extension ImagesListViewController {
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count
+        return imagesListService.photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -101,7 +103,7 @@ extension ImagesListViewController {
       forRowAt indexPath: IndexPath
     ) {
         if indexPath.row + 1 == imagesListService.photos.count {
-            imagesListService.fetchPhotosNextPage()
+            //imagesListService.fetchPhotosNextPage()
         }
     }
 }
