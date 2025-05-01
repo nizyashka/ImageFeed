@@ -20,6 +20,7 @@ struct Photo {
 final class ImagesListService {
     static let shared = ImagesListService()
     private(set) var photos: [Photo] = []
+    var imageListServiceObserver: NSObjectProtocol?
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private var task: URLSessionTask?
     private let storage = OAuth2TokenStorage()

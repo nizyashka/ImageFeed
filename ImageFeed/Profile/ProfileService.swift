@@ -24,8 +24,11 @@ final class ProfileService {
             return
         }
         
-        let url = URL(string: "https://api.unsplash.com/me")
-        var request = URLRequest(url: url!)
+        guard let url = URL(string: "https://api.unsplash.com/me") else {
+            print("[ProfileService] - Invalid URL")
+            return
+        }
+        var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         

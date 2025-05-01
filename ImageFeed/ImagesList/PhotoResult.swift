@@ -46,7 +46,7 @@ struct UrlsResult: Codable {
     let urlThumb: String
     
     enum CodingKeys: String, CodingKey {
-        case urlLarge = "full"
+        case urlLarge = "regular"
         case urlThumb = "thumb"
     }
 }
