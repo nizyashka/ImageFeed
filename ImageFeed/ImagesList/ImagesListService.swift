@@ -108,8 +108,6 @@ final class ImagesListService {
             var welcomeDescription: String? = nil
             if let description = photo.welcomeDescription {
                 welcomeDescription = description
-            } else {
-                print("[ImagesListService]: WelcomeDescriptionError - Was unable to find welcome description")
             }
             
             let thumbImageURL = photo.urls.urlThumb
@@ -135,5 +133,46 @@ final class ImagesListService {
                 object: self,
                 userInfo: nil)
         lastLoadedPage += 1
+    }
+    
+    func changeLike(photoId: String, isLiked: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let url = URL(string: "https://api.unsplash.com/photos/\(photoId)/like"), let token = storage.token else {
+            print("[ImagesListService]: URLError Or Missing Token")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.httpMethod = isLiked ? "DELETE" : "POST"
+        
+        URLSession.shared.data(for: request) { result in
+            switch result {
+            case .success(_):
+                DispatchQueue.main.async {
+                    if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
+                        let photo = self.photos[index]
+                        let newPhoto = Photo(
+                            id: photo.id,
+                            size: photo.size,
+                            createdAt: photo.createdAt,
+                            welcomeDescription: photo.welcomeDescription,
+                            thumbImageURL: photo.thumbImageURL,
+                            largeImageURL: photo.largeImageURL,
+                            isLiked: !photo.isLiked
+                        )
+                        self.photos[index] = newPhoto
+                    }
+                    completion(.success(()))
+                }
+            case .failure(let error):
+                print("[ImagesListService]: Error changing Like - \(error)")
+                completion(.failure(error))
+                return
+            }
+        }.resume()
+    }
+    
+    func cleanPhotos() {
+        photos.removeAll()
     }
 }

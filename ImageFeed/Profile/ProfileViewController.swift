@@ -17,6 +17,7 @@ final class ProfileViewController: UIViewController {
     private var exitButton: UIButton?
     private var profileService = ProfileService.shared
     private var profileImageService = ProfileImageService.shared
+    private let profileLogoutService = ProfileLogoutService.shared
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private var profileImageServiceObserver: NSObjectProtocol?
     
@@ -121,6 +122,9 @@ final class ProfileViewController: UIViewController {
         exitButton?.setImage(UIImage(resource: .exit), for: .normal)
         guard let exitButton = exitButton else { return }
         exitButton.tintColor = .red
+        
+        exitButton.addTarget(self, action: #selector(exitButtonTapped), for: .touchUpInside)
+        
         exitButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(exitButton)
         
@@ -149,17 +153,28 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateAvatar() {
-//        guard
-//            let profileImageURL = ProfileImageService.shared.avatarURL,
-//            let url = URL(string: profileImageURL)
-//        else { return }
+        //        guard
+        //            let profileImageURL = ProfileImageService.shared.avatarURL,
+        //            let url = URL(string: profileImageURL)
+        //        else { return }
         // TODO [Sprint 11] Обновить аватар, используя Kingfisher
         guard let profileImage = profileImageService.avatarURL else { return }
         
         if let profileImageURL = URL(string: profileImage) {
             guard let profileImageView = profileImageView else { return }
             profileImageView.kf.setImage(with: profileImageURL,
-            placeholder: UIImage(named: "placeholder"))
+                                         placeholder: UIImage(named: "placeholder"))
         }
+    }
+    
+    @objc private func exitButtonTapped() {
+        profileLogoutService.logout()
+        switchToAuthViewController()
+    }
+    
+    private func switchToAuthViewController() {
+        let splashViewController = SplashViewController()
+        splashViewController.modalPresentationStyle = .fullScreen
+        self.present(splashViewController, animated: true)
     }
 }

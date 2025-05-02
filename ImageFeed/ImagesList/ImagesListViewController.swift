@@ -23,11 +23,8 @@ final class ImagesListViewController: UIViewController {
         return formatter
     }()
     
-    //private let photosName: [String] = Array(0..<20).map{ "\($0)" }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         
         imagesListService.imageListServiceObserver = NotificationCenter.default
             .addObserver(
@@ -55,23 +52,11 @@ final class ImagesListViewController: UIViewController {
                 return
             }
             
-            //let image = UIImage(named: photosName[indexPath.row])
             guard let url = URL(string: photos[indexPath.row].largeImageURL) else {
-                print("No URL")
+                print("[ImagesListViewController] - No URL")
                 return
             }
-            let request = URLRequest(url: url)
-            let task = URLSession.shared.data(for: request) { result in
-                switch result {
-                case .success(let data):
-                    viewController.image = UIImage(data: data)
-                case .failure(let error):
-                    print("[ImagesListViewController] - Unable to load an image: \(error)")
-                }
-            }
-            
-            task.resume()
-            //viewController.imageView.kf.setImage(with: url)
+            viewController.fullImageURL = url
         } else {
             super.prepare(for: segue, sender: sender)
         }
@@ -94,10 +79,7 @@ final class ImagesListViewController: UIViewController {
 
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        //guard let image = UIImage(named: photosName[indexPath.row]) else { return }
-        //cell.cellImage.image = image
-        //cell.cellImage.kf.setImage(with: URL(string: photos[indexPath.row].largeImageURL))
-        guard let url = URL(string: photos[indexPath.row].largeImageURL) else {
+        guard let url = URL(string: photos[indexPath.row].thumbImageURL) else {
             print("[ImagesListViewController] - Invalid URL")
             return
         }
@@ -106,13 +88,13 @@ extension ImagesListViewController {
         cell.cellImage.contentMode = .center
         cell.cellImage.kf.indicatorType = .activity
         cell.cellImage.kf.setImage(with: url,
-                              placeholder: UIImage(named: "placeholderImage.jpeg"),
+                                   placeholder: UIImage(named: "placeholderImage.jpeg"),
                                    options: [.processor(processor)]) { _ in
             cell.cellImage.contentMode = .scaleAspectFill
         }
         cell.dateLabel.text = dateFormatter.string(from: Date())
         
-        let isLiked = indexPath.row % 2 == 0
+        let isLiked = photos[indexPath.row].isLiked
         let likeImage = isLiked ? UIImage(named: "likeButtonOn") : UIImage(named: "likeButtonOff")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
@@ -129,6 +111,8 @@ extension ImagesListViewController: UITableViewDataSource {
         guard let imageListCell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
+        
+        imageListCell.delegate = self
         
         configCell(for: imageListCell, with: indexPath)
         return imageListCell
@@ -160,5 +144,31 @@ extension ImagesListViewController {
         if indexPath.row + 1 == photos.count {
             imagesListService.fetchPhotosNextPage()
         }
+    }
+}
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(photoId: photo.id, isLiked: photo.isLiked) { result in
+            switch result {
+            case .success():
+                self.photos = self.imagesListService.photos
+                let photoNew = self.photos[indexPath.row]
+                self.setIsLiked(cell: cell, photo: photoNew)
+                UIBlockingProgressHUD.dismiss()
+            case .failure(let error):
+                UIBlockingProgressHUD.dismiss()
+                print("[ImagesListViewController]: Error changing Like - \(error)")
+                return
+            }
+        }
+    }
+    
+    func setIsLiked(cell: ImagesListCell, photo: Photo) {
+        let likeImage = photo.isLiked ? UIImage(named: "likeButtonOn") : UIImage(named: "likeButtonOff")
+        cell.likeButton.setImage(likeImage, for: .normal)
     }
 }
