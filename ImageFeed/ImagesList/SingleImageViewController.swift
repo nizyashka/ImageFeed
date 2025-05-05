@@ -55,10 +55,12 @@ final class SingleImageViewController: UIViewController {
     
     private func setImage() {
         UIBlockingProgressHUD.show()
-        imageView.kf.setImage(with: fullImageURL) { [weak self] result in
-            UIBlockingProgressHUD.dismiss()
-            
+        imageView.contentMode = .center
+        imageView.kf.setImage(with: fullImageURL,
+                              placeholder: UIImage(named: "placeholderImage.jpeg")) { [weak self] result in
             guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
+            self.imageView.contentMode = .scaleToFill
             switch result {
             case .success(let imageResult):
                 image = imageResult.image

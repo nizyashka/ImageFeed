@@ -13,12 +13,13 @@ final class ImagesListViewController: UIViewController {
     private let imagesListService = ImagesListService.shared
     private var photos: [Photo] = []
     private let processor = RoundCornerImageProcessor(cornerRadius: 20)
+    //private let dateFormatter = DateFormatter()
     
     @IBOutlet private var tableView: UITableView!
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateStyle = .long
+        formatter.dateStyle = .medium
         formatter.timeStyle = .none
         return formatter
     }()
@@ -92,7 +93,17 @@ extension ImagesListViewController {
                                    options: [.processor(processor)]) { _ in
             cell.cellImage.contentMode = .scaleAspectFill
         }
-        cell.dateLabel.text = dateFormatter.string(from: Date())
+        
+        //guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        
+        guard let date = photo.createdAt else {
+            print("[ImagesListViewController] - No date")
+            return
+        }
+        
+        let formattedDate = dateFormatter.string(from: date)
+        cell.dateLabel.text = formattedDate
         
         let isLiked = photos[indexPath.row].isLiked
         let likeImage = isLiked ? UIImage(named: "likeButtonOn") : UIImage(named: "likeButtonOff")
@@ -171,4 +182,18 @@ extension ImagesListViewController: ImagesListCellDelegate {
         let likeImage = photo.isLiked ? UIImage(named: "likeButtonOn") : UIImage(named: "likeButtonOff")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
+    
+//    func setDate(_ cell: ImagesListCell) {
+//        guard let indexPath = tableView.indexPath(for: cell) else { return }
+//        let photo = photos[indexPath.row]
+//        
+//        guard let date = photo.createdAt else {
+//            print("[ImagesListViewController] - No date")
+//            return
+//        }
+//        
+//        let formattedDate = date.
+//        
+//        cell.dateLabel.text = photo.createdAt
+//    }
 }

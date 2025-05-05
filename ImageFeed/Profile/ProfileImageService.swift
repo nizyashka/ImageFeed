@@ -26,7 +26,7 @@ final class ProfileImageService {
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         if task != nil {
-            print("Extra task")
+            print("[ProfileImageService] - Extra task")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }

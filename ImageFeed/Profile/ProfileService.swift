@@ -19,7 +19,7 @@ final class ProfileService {
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         assert(Thread.isMainThread)
         if task != nil {
-            print("Extra task")
+            print("[ProfileService] - Extra task")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }

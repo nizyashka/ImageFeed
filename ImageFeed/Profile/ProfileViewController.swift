@@ -168,8 +168,20 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func exitButtonTapped() {
-        profileLogoutService.logout()
-        switchToAuthViewController()
+        showAlert()
+    }
+    
+    private func showAlert() {
+        let alert = UIAlertController(title: "Пока, пока!", message: "Уверены, что хотите выйти?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Нет", style: .cancel) { _ in
+            self.dismiss(animated: true, completion: nil)
+        })
+        
+        alert.addAction(UIAlertAction(title: "Да", style: .default) { _ in
+            self.profileLogoutService.logout()
+            self.switchToAuthViewController()
+        })
+        self.present(alert, animated: true)
     }
     
     private func switchToAuthViewController() {
@@ -177,4 +189,5 @@ final class ProfileViewController: UIViewController {
         splashViewController.modalPresentationStyle = .fullScreen
         self.present(splashViewController, animated: true)
     }
+    
 }
