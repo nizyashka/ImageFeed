@@ -26,40 +26,19 @@ final class ProfileImageService {
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         if task != nil {
-            print("Extra task")
+            print("[ProfileImageService] - Extra task")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         
-        let url = URL(string: "https://api.unsplash.com/users/\(username)")
-        var request = URLRequest(url: url!)
+        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+            print("[ProfileImageService] - Invalid URL")
+            return
+        }
+        var request = URLRequest(url: url)
         request.httpMethod = "GET"
         guard let token = storage.token else { return }
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-//        let task = urlSession.data(for: request) { [weak self] result in
-//            switch result {
-//            case .success(let data):
-//                switch UserResult.decode(from: data) {
-//                case .success(let profileImageURL):
-//                    //print(profileImageURL)
-//                    self?.avatarURL = profileImageURL
-//                    completion(.success(profileImageURL))
-//                    NotificationCenter.default
-//                        .post(
-//                            name: ProfileImageService.didChangeNotification,
-//                            object: self,
-//                            userInfo: ["URL": profileImageURL])
-//                case .failure(let error):
-//                    print(error)
-//                    completion(.failure(error))
-//                }
-//            case .failure(let error):
-//                print(error)
-//                completion(.failure(error))
-//            }
-//            self?.task = nil
-//        }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             switch result {
@@ -80,6 +59,10 @@ final class ProfileImageService {
             self?.task = nil
         }
         task.resume()
+    }
+    
+    func cleanAvatarURL() {
+        avatarURL = nil
     }
 }
 

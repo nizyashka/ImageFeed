@@ -19,34 +19,18 @@ final class ProfileService {
     func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         assert(Thread.isMainThread)
         if task != nil {
-            print("Extra task")
+            print("[ProfileService] - Extra task")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         
-        let url = URL(string: "https://api.unsplash.com/me")
-        var request = URLRequest(url: url!)
+        guard let url = URL(string: "https://api.unsplash.com/me") else {
+            print("[ProfileService] - Invalid URL")
+            return
+        }
+        var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-//        let task = urlSession.data(for: request) { [weak self] result in
-//            switch result {
-//            case .success(let data):
-//                switch ProfileResult.decode(from: data) {
-//                case .success(let responseBody):
-//                    self?.profile = responseBody
-//                    completion(.success(responseBody))
-//                    print(responseBody)
-//                case .failure(let error):
-//                    print(error)
-//                    completion(.failure(error))
-//                }
-//            case .failure(let error):
-//                print(error)
-//                completion(.failure(error))
-//            }
-//            self?.task = nil
-//        }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             switch result {
@@ -84,7 +68,13 @@ final class ProfileService {
             }
             self?.task = nil
         }
+        
+        self.task = task
         task.resume()
+    }
+    
+    func cleanProfile() {
+        profile = nil
     }
 }
 
