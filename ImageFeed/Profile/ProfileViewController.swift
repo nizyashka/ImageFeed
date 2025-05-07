@@ -48,13 +48,14 @@ final class ProfileViewController: UIViewController {
         
         updateProfileDetails()
         updateAvatar()
-        //profileService.fetchProfile(authToken, completion: updateProfile)
     }
     
     func addProfileImageView() {
         let profileImage = UIImage(named: "profile_photo")
         profileImageView = UIImageView(image: profileImage)
         guard let profileImageView = profileImageView else { return }
+        profileImageView.layer.cornerRadius = profileImageView.frame.size.width / 2
+        profileImageView.clipsToBounds = true
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
         
@@ -153,11 +154,6 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateAvatar() {
-        //        guard
-        //            let profileImageURL = ProfileImageService.shared.avatarURL,
-        //            let url = URL(string: profileImageURL)
-        //        else { return }
-        // TODO [Sprint 11] Обновить аватар, используя Kingfisher
         guard let profileImage = profileImageService.avatarURL else { return }
         
         if let profileImageURL = URL(string: profileImage) {

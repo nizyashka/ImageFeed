@@ -7,16 +7,6 @@
 
 import Foundation
 
-struct Photo {
-    let id: String
-    let size: CGSize
-    let createdAt: Date?
-    let welcomeDescription: String?
-    let thumbImageURL: String
-    let largeImageURL: String
-    let isLiked: Bool
-}
-
 final class ImagesListService {
     static let shared = ImagesListService()
     private(set) var photos: [Photo] = []
@@ -24,12 +14,12 @@ final class ImagesListService {
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     private var task: URLSessionTask?
     private let storage = OAuth2TokenStorage()
-    private var lastLoadedPage: Int = 1
+    private var lastLoadedPage: Int = 0
     
     private init() { }
     
     private func makeRequest() -> URLRequest? {
-        var components = URLComponents(string: "https://api.unsplash.com/photos")
+        var components = URLComponents(string: Constants.defaultBaseURL.absoluteString + "photos")
         components?.queryItems = [URLQueryItem(name: "page", value: String(lastLoadedPage))]
         
         guard let url = components?.url, let token = storage.token else {
@@ -91,39 +81,10 @@ final class ImagesListService {
     
     private func toPhoto(from photoResult: [PhotoModel]) {
         photoResult.forEach { photo in
-            let id = photo.id
-            let size = CGSize(width: photo.width, height: photo.height)
-            
-            var createdAt: Date? = nil
-            if let date = photo.createdAt {
-                guard let formattedDate = ISO8601DateFormatter().date(from: date) else {
-                    print("[ImagesListService]: DateFormatterError - Was unable to format date")
-                    return
-                }
-                createdAt = formattedDate
-            } else {
-                print("[ImagesListService]: DateFormatterError - Was unable to find date")
-            }
-            
-            var welcomeDescription: String? = nil
-            if let description = photo.welcomeDescription {
-                welcomeDescription = description
-            }
-            
-            let thumbImageURL = photo.urls.urlThumb
-            let largeImageURL = photo.urls.urlLarge
-            let isLiked = photo.isLiked
-            
-            let photo = Photo(id: id,
-                              size: size,
-                              createdAt: createdAt,
-                              welcomeDescription: welcomeDescription,
-                              thumbImageURL: thumbImageURL,
-                              largeImageURL: largeImageURL,
-                              isLiked: isLiked)
+            let newPhoto = Photo(from: photo)
             
             DispatchQueue.main.async {
-                self.photos.append(photo)
+                self.photos.append(newPhoto)
             }
         }
         

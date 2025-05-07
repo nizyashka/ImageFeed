@@ -12,8 +12,6 @@ final class ImagesListViewController: UIViewController {
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let imagesListService = ImagesListService.shared
     private var photos: [Photo] = []
-    private let processor = RoundCornerImageProcessor(cornerRadius: 20)
-    //private let dateFormatter = DateFormatter()
     
     @IBOutlet private var tableView: UITableView!
     
@@ -90,11 +88,10 @@ extension ImagesListViewController {
         cell.cellImage.kf.indicatorType = .activity
         cell.cellImage.kf.setImage(with: url,
                                    placeholder: UIImage(named: "placeholderImage.jpeg"),
-                                   options: [.processor(processor)]) { _ in
+                                   options: [.processor(RoundCornerImageProcessor(cornerRadius: 20))]) { _ in
             cell.cellImage.contentMode = .scaleAspectFill
         }
         
-        //guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
         
         guard let date = photo.createdAt else {
@@ -164,14 +161,13 @@ extension ImagesListViewController: ImagesListCellDelegate {
         let photo = photos[indexPath.row]
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(photoId: photo.id, isLiked: photo.isLiked) { result in
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case .success():
                 self.photos = self.imagesListService.photos
                 let photoNew = self.photos[indexPath.row]
                 self.setIsLiked(cell: cell, photo: photoNew)
-                UIBlockingProgressHUD.dismiss()
             case .failure(let error):
-                UIBlockingProgressHUD.dismiss()
                 print("[ImagesListViewController]: Error changing Like - \(error)")
                 return
             }
@@ -182,18 +178,4 @@ extension ImagesListViewController: ImagesListCellDelegate {
         let likeImage = photo.isLiked ? UIImage(named: "likeButtonOn") : UIImage(named: "likeButtonOff")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
-    
-//    func setDate(_ cell: ImagesListCell) {
-//        guard let indexPath = tableView.indexPath(for: cell) else { return }
-//        let photo = photos[indexPath.row]
-//        
-//        guard let date = photo.createdAt else {
-//            print("[ImagesListViewController] - No date")
-//            return
-//        }
-//        
-//        let formattedDate = date.
-//        
-//        cell.dateLabel.text = photo.createdAt
-//    }
 }
