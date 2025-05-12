@@ -186,6 +186,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="8dQ-Qd-ifZ"/>
                     <connections>
+                        <outlet property="backButton" destination="HrB-AB-rdG" id="bJs-uK-bg4"/>
                         <outlet property="imageView" destination="e8Z-TX-kNc" id="1yg-JB-zZN"/>
                         <outlet property="scrollView" destination="gBL-Ae-5sf" id="gr4-da-dIi"/>
                         <outlet property="shareButton" destination="kRG-pV-S3C" id="J2r-PI-GXA"/>
@@ -198,7 +199,7 @@
         <!--Web View View Controller-->
         <scene sceneID="61c-fa-yqJ">
             <objects>
-                <viewController id="Ogz-8N-Wmh" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="Ogz-8N-Wmh" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="VQn-dw-G3O">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

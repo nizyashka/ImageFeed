@@ -61,7 +61,7 @@ final class ImagesListViewController: UIViewController {
         }
     }
     
-    func updateTableViewAnimated() {
+    private func updateTableViewAnimated() {
         let oldCount = photos.count
         let newCount = imagesListService.photos.count
         photos = imagesListService.photos
@@ -77,7 +77,7 @@ final class ImagesListViewController: UIViewController {
 }
 
 extension ImagesListViewController {
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         guard let url = URL(string: photos[indexPath.row].thumbImageURL) else {
             print("[ImagesListViewController] - Invalid URL")
             return
@@ -174,7 +174,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
         }
     }
     
-    func setIsLiked(cell: ImagesListCell, photo: Photo) {
+    private func setIsLiked(cell: ImagesListCell, photo: Photo) {
         let likeImage = photo.isLiked ? UIImage(named: "likeButtonOn") : UIImage(named: "likeButtonOff")
         cell.likeButton.setImage(likeImage, for: .normal)
     }

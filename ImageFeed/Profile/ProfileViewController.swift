@@ -50,7 +50,7 @@ final class ProfileViewController: UIViewController {
         updateAvatar()
     }
     
-    func addProfileImageView() {
+    private func addProfileImageView() {
         let profileImage = UIImage(named: "profile_photo")
         profileImageView = UIImageView(image: profileImage)
         guard let profileImageView = profileImageView else { return }
@@ -67,7 +67,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    func addNameLabel() {
+    private func addNameLabel() {
         nameLabel = UILabel()
         guard let nameLabel = nameLabel else { return }
         nameLabel.text = "Екатерина Новикова"
@@ -84,7 +84,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    func addLoginLabel() {
+    private func addLoginLabel() {
         loginLabel = UILabel()
         guard let loginLabel = loginLabel else { return }
         loginLabel.text = "@ekaterina_nov"
@@ -101,7 +101,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    func addDescriptionLabel() {
+    private func addDescriptionLabel() {
         descriptionLabel = UILabel()
         guard let descriptionLabel = descriptionLabel else { return }
         descriptionLabel.text = "Hello, world!"
@@ -118,7 +118,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    func addExitButton() {
+    private func addExitButton() {
         exitButton = UIButton(type: .custom)
         exitButton?.setImage(UIImage(resource: .exit), for: .normal)
         guard let exitButton = exitButton else { return }
@@ -127,6 +127,7 @@ final class ProfileViewController: UIViewController {
         exitButton.addTarget(self, action: #selector(exitButtonTapped), for: .touchUpInside)
         
         exitButton.translatesAutoresizingMaskIntoConstraints = false
+        exitButton.accessibilityIdentifier = "logout button"
         view.addSubview(exitButton)
         
         guard let profileImageView = profileImageView else { return }
@@ -140,7 +141,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    func updateProfileDetails() {
+    private func updateProfileDetails() {
         guard let profile = profileService.profile else { return }
         
         guard let nameLabel = nameLabel else { return }
