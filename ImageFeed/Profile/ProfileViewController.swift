@@ -9,20 +9,25 @@ import Foundation
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfileViewPresenterProtocol? { get set }
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     private var profileImageView: UIImageView?
     private var nameLabel: UILabel?
     private var loginLabel: UILabel?
     private var descriptionLabel: UILabel?
     private var exitButton: UIButton?
-    private var profileService = ProfileService.shared
-    private var profileImageService = ProfileImageService.shared
-    private let profileLogoutService = ProfileLogoutService.shared
-    private let oauth2TokenStorage = OAuth2TokenStorage()
+    
     private var profileImageServiceObserver: NSObjectProtocol?
+    var presenter: ProfileViewPresenterProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        presenter = ProfileViewPresenter()
+        presenter?.view = self
         
         view.backgroundColor = UIColor(named: "YP Black")
         addProfileImageView()
@@ -30,11 +35,6 @@ final class ProfileViewController: UIViewController {
         addLoginLabel()
         addDescriptionLabel()
         addExitButton()
-        
-        guard let authToken = oauth2TokenStorage.token else {
-            print("No authorization token found.")
-            return
-        }
         
         profileImageServiceObserver = NotificationCenter.default
             .addObserver(
@@ -141,27 +141,24 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func updateProfileDetails() {
-        guard let profile = profileService.profile else { return }
-        
+    private func updateProfileDetails() {        
         guard let nameLabel = nameLabel else { return }
-        nameLabel.text = profile.name
+        nameLabel.text = presenter?.getProfileDetails(for: .name)
         
         guard let loginLabel = loginLabel else { return }
-        loginLabel.text = profile.loginName
+        loginLabel.text = presenter?.getProfileDetails(for: .loginName)
         
         guard let descriptionLabel = descriptionLabel else { return }
-        descriptionLabel.text = profile.bio
+        descriptionLabel.text = presenter?.getProfileDetails(for: .bio)
     }
     
     private func updateAvatar() {
-        guard let profileImage = profileImageService.avatarURL else { return }
+        guard let profileImageView = profileImageView else { return }
         
-        if let profileImageURL = URL(string: profileImage) {
-            guard let profileImageView = profileImageView else { return }
-            profileImageView.kf.setImage(with: profileImageURL,
-                                         placeholder: UIImage(named: "placeholder"))
-        }
+        let profileImageURL = presenter?.getAvatarURL()
+        
+        profileImageView.kf.setImage(with: profileImageURL,
+                                     placeholder: UIImage(named: "placeholder"))
     }
     
     @objc private func exitButtonTapped() {
@@ -175,7 +172,7 @@ final class ProfileViewController: UIViewController {
         })
         
         alert.addAction(UIAlertAction(title: "Да", style: .default) { _ in
-            self.profileLogoutService.logout()
+            self.presenter?.logout()
             self.switchToAuthViewController()
         })
         self.present(alert, animated: true)
@@ -186,5 +183,4 @@ final class ProfileViewController: UIViewController {
         splashViewController.modalPresentationStyle = .fullScreen
         self.present(splashViewController, animated: true)
     }
-    
 }
