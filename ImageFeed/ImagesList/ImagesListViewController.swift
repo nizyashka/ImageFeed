@@ -8,10 +8,17 @@
 import UIKit
 import Kingfisher
 
-final class ImagesListViewController: UIViewController {
+protocol ImagesListViewControllerProtocol: AnyObject {
+    var photos: [Photo] { get set }
+    var presenter: ImagesListViewPresenterProtocol? { get set }
+    func updateTableViewAnimated()
+    func setIsLiked(cell: ImagesListCell, photo: Photo)
+}
+
+final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let imagesListService = ImagesListService.shared
-    private var photos: [Photo] = []
+    var presenter: ImagesListViewPresenterProtocol?
+    var photos: [Photo] = []
     
     @IBOutlet private var tableView: UITableView!
     
@@ -25,17 +32,12 @@ final class ImagesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        imagesListService.imageListServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ImagesListService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateTableViewAnimated()
-            }
+        presenter = ImagesListViewPresenter()
+        presenter?.view = self
         
-        imagesListService.fetchPhotosNextPage()
+        presenter?.callNotification()
+        
+        presenter?.fetchPhotosNextPage()
         
         tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
@@ -62,9 +64,10 @@ final class ImagesListViewController: UIViewController {
     }
     
     func updateTableViewAnimated() {
+        guard let presenter = presenter else { return }
         let oldCount = photos.count
-        let newCount = imagesListService.photos.count
-        photos = imagesListService.photos
+        let newCount = presenter.getPhotosCount()
+        photos = presenter.getPhotos()
         if oldCount != newCount {
             tableView.performBatchUpdates {
                 let indexPaths = (oldCount..<newCount).map { i in
@@ -77,7 +80,7 @@ final class ImagesListViewController: UIViewController {
 }
 
 extension ImagesListViewController {
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         guard let url = URL(string: photos[indexPath.row].thumbImageURL) else {
             print("[ImagesListViewController] - Invalid URL")
             return
@@ -150,7 +153,7 @@ extension ImagesListViewController {
         forRowAt indexPath: IndexPath
     ) {
         if indexPath.row + 1 == photos.count {
-            imagesListService.fetchPhotosNextPage()
+            presenter?.fetchPhotosNextPage()
         }
     }
 }
@@ -158,20 +161,7 @@ extension ImagesListViewController {
 extension ImagesListViewController: ImagesListCellDelegate {
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        let photo = photos[indexPath.row]
-        UIBlockingProgressHUD.show()
-        imagesListService.changeLike(photoId: photo.id, isLiked: photo.isLiked) { result in
-            UIBlockingProgressHUD.dismiss()
-            switch result {
-            case .success():
-                self.photos = self.imagesListService.photos
-                let photoNew = self.photos[indexPath.row]
-                self.setIsLiked(cell: cell, photo: photoNew)
-            case .failure(let error):
-                print("[ImagesListViewController]: Error changing Like - \(error)")
-                return
-            }
-        }
+        presenter?.changeLike(cell: cell, indexPath: indexPath)
     }
     
     func setIsLiked(cell: ImagesListCell, photo: Photo) {
