@@ -37,7 +37,7 @@ The UI/UX design was created in Figma:
 ## 🚀 Installation
 1. Clone the repository
 2. Open the project in Xcode
-3. Run the project on a simulator or device (iOS 13+)
+3. Run the project on a simulator or device (iOS 13+) **with VPN enabled**
 
 ## 📫 Contact
 E-mail: alnepryakhin@gmail.com<br>
