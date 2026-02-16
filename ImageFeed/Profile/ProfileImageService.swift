@@ -1,11 +1,3 @@
-//
-//  ProfileImageService.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 11.04.2025.
-//
-
-import Foundation
 import UIKit
 
 enum Errors: Error {

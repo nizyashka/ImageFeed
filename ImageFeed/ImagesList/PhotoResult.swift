@@ -1,17 +1,9 @@
-//
-//  PhotoResult.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 22.04.2025.
-//
-
 import Foundation
 
 struct PhotoResult {
     static func decode(data: Data, completion: (Result<[PhotoModel], Error>) -> Void) {
         let decoder = JSONDecoder()
         do {
-            //print(String(data: data, encoding: .utf8))
             let decodedPhotos = try decoder.decode([PhotoModel].self, from: data)
             completion(.success(decodedPhotos))
         } catch {

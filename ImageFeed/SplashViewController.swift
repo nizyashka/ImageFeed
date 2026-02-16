@@ -1,11 +1,3 @@
-//
-//  SplashViewController.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 27.03.2025.
-//
-
-import Foundation
 import UIKit
 
 final class SplashViewController: UIViewController {
@@ -40,17 +32,14 @@ final class SplashViewController: UIViewController {
     }
     
     private func switchToTabBarController() {
-        // Получаем экземпляр `window` приложения
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid window configuration")
             return
         }
         
-        // Создаём экземпляр нужного контроллера из Storyboard с помощью ранее заданного идентификатора
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
             .instantiateViewController(withIdentifier: "TabBarViewController")
         
-        // Установим в `rootViewController` полученный контроллер
         window.rootViewController = tabBarController
     }
     
@@ -90,7 +79,6 @@ extension SplashViewController: AuthViewControllerDelegate {
             case .success(let profile):
                 guard let username = profile.username else { return }
                 ProfileImageService.shared.fetchProfileImageURL(username: username) { result in
-                    //Что тут вообще должно происходить???
                     switch result {
                     case .success(let profileImageURL):
                         print(profileImageURL)

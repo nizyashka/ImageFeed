@@ -1,11 +1,3 @@
-//
-//  ImagesListCell.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 27.02.2025.
-//
-
-import Foundation
 import UIKit
 import Kingfisher
 

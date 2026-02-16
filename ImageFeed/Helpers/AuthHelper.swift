@@ -1,10 +1,3 @@
-//
-//  AuthHelper.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 10.05.2025.
-//
-
 import Foundation
 
 protocol AuthHelperProtocol {

@@ -1,11 +1,3 @@
-//
-//  ProfileViewController.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 03.03.2025.
-//
-
-import Foundation
 import UIKit
 import Kingfisher
 

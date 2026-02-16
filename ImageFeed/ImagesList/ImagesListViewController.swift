@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 26.02.2025.
-//
-
 import UIKit
 import Kingfisher
 

@@ -1,10 +1,3 @@
-//
-//  WebViewPresenter.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 09.05.2025.
-//
-
 import Foundation
 
 public protocol WebViewPresenterProtocol: AnyObject {

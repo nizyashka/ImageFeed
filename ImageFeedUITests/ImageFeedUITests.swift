@@ -1,19 +1,12 @@
-//
-//  ImageFeedUITests.swift
-//  ImageFeedUITests
-//
-//  Created by Алексей Непряхин on 12.05.2025.
-//
-
 import XCTest
 
 class Image_FeedUITests: XCTestCase {
-    private let app = XCUIApplication() // переменная приложения
+    private let app = XCUIApplication()
     
     override func setUpWithError() throws {
-        continueAfterFailure = false // настройка выполнения тестов, которая прекратит выполнения тестов, если в тесте что-то пошло не так
+        continueAfterFailure = false
         
-        app.launch() // запускаем приложение перед каждым тестом
+        app.launch()
     }
     
     func testAuth() throws {
@@ -46,7 +39,6 @@ class Image_FeedUITests: XCTestCase {
     }
     
     func testFeed() throws {
-        // тестируем сценарий ленты
         let tablesQuery = app.tables
         
         let cell = tablesQuery.children(matching: .cell).element(boundBy: 0)
@@ -74,7 +66,6 @@ class Image_FeedUITests: XCTestCase {
     }
     
     func testProfile() throws {
-        // тестируем сценарий профиля
         sleep(3)
         app.tabBars.buttons.element(boundBy: 1).tap()
         

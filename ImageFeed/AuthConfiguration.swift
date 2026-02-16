@@ -1,10 +1,3 @@
-//
-//  Constants.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 13.03.2025.
-//
-
 import Foundation
 
 enum Constants {

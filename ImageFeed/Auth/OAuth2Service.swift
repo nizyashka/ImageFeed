@@ -1,10 +1,3 @@
-//
-//  OAuth2Service.swift
-//  ImageFeed
-//
-//  Created by Алексей Непряхин on 22.03.2025.
-//
-
 import Foundation
 
 enum AuthServiceError: Error {
